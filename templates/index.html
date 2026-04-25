@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediFind — Medicine Availability Bhopal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --card: #1a2235;
+    --border: #1e3a5f;
+    --accent: #00d4aa;
+    --accent2: #0ea5e9;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --rx: #a78bfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 212, 170, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 170, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-orb {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,170,0.06) 0%, transparent 70%);
+    top: -200px;
+    right: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-orb2 {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(14,165,233,0.05) 0%, transparent 70%);
+    bottom: -100px;
+    left: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    background: rgba(10,15,30,0.8);
+    position: sticky;
+    top: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-text span { color: var(--accent); }
+
+  .header-badge {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 72px 20px 48px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(0,212,170,0.08);
+    border: 1px solid rgba(0,212,170,0.2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 480px;
+    margin: 0 auto 48px;
+    line-height: 1.6;
+  }
+
+  /* ---- SEARCH BOX ---- */
+  .search-container {
+    max-width: 780px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 0 60px rgba(0,212,170,0.06);
+    position: relative;
+    z-index: 2;
+  }
+
+  .search-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  .input-wrap .icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    pointer-events: none;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 16px 14px 46px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  select { padding-left: 16px; cursor: pointer; }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,170,0.1);
+  }
+
+  input::placeholder { color: var(--muted); }
+
+  .btn-search {
+    background: linear-gradient(135deg, var(--accent), #00b894);
+    color: #0a0f1e;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-search:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,212,170,0.3);
+  }
+
+  .btn-search:active { transform: translateY(0); }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .toggle {
+    width: 40px;
+    height: 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: left 0.2s;
+  }
+
+  .toggle.on::after { left: 20px; }
+
+  /* ---- RESULTS ---- */
+  .results-section {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 48px auto;
+    padding: 0 20px 60px;
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .results-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .result-count {
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+
+  .result-count span { color: var(--accent); font-weight: 600; }
+
+  /* Cards grid */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .medicine-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .medicine-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0,212,170,0.3);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .medicine-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .medicine-generic {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .badge-avail { background: rgba(0,212,170,0.12); color: var(--accent); border: 1px solid rgba(0,212,170,0.25); }
+  .badge-unavail { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+  .badge-rx { background: rgba(167,139,250,0.1); color: var(--rx); border: 1px solid rgba(167,139,250,0.2); }
+  .badge-cat { background: rgba(14,165,233,0.1); color: var(--accent2); border: 1px solid rgba(14,165,233,0.2); }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .pharmacy-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .pharmacy-name {
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .open24 {
+    font-size: 10px;
+    background: rgba(245,158,11,0.1);
+    color: var(--warn);
+    border: 1px solid rgba(245,158,11,0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .pharmacy-detail {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .price {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .price span { font-size: 12px; font-weight: 400; color: var(--muted); }
+
+  .qty {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .qty strong { color: var(--text); }
+
+  /* ---- STATES ---- */
+  .state-box {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+
+  .state-box .emoji { font-size: 48px; margin-bottom: 16px; }
+  .state-box h3 { font-family: 'Syne', sans-serif; font-size: 20px; color: var(--text); margin-bottom: 8px; }
+  .state-box p { font-size: 14px; max-width: 320px; margin: 0 auto; }
+
+  /* Loader */
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 60px;
+  }
+
+  .loader-dot {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: bounce 0.8s ease infinite;
+  }
+
+  .loader-dot:nth-child(2) { animation-delay: 0.15s; }
+  .loader-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ---- STATS STRIP ---- */
+  .stats-strip {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 0 20px 40px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* suggestions */
+  .suggestions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .suggestion {
+    font-size: 12px;
+    color: var(--accent);
+    background: rgba(0,212,170,0.06);
+    border: 1px solid rgba(0,212,170,0.15);
+    padding: 5px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .suggestion:hover { background: rgba(0,212,170,0.12); }
+
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    .search-row { grid-template-columns: 1fr; }
+    .btn-search { width: 100%; justify-content: center; }
+    .results-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-orb"></div>
+<div class="glow-orb2"></div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">💊</div>
+    <div class="logo-text">Medi<span>Find</span></div>
+  </div>
+  <div class="header-badge">📍 Bhopal, MP</div>
+</header>
+
+<section class="hero">
+  <div class="hero-eyebrow">⚡ Real-time availability</div>
+  <h1>Find Any Medicine<br><span class="highlight">Near You Instantly</span></h1>
+  <p>Stop visiting pharmacy after pharmacy. Search once, find where your medicine is available right now.</p>
+
+  <div class="search-container">
+    <div class="search-row">
+      <div class="input-wrap">
+        <span class="icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search medicine name or generic name..." autocomplete="off">
+      </div>
+      <select id="areaFilter">
+        <option value="">All Areas</option>
+      </select>
+      <button class="btn-search" onclick="doSearch()">
+        Search
+      </button>
+    </div>
+    <div class="filter-row">
+      <label class="toggle-wrap" onclick="toggleAvailable()">
+        <div class="toggle" id="availToggle"></div>
+        <span id="availLabel">Show all stock</span>
+      </label>
+      <div class="suggestions">
+        <span class="suggestion" onclick="quickSearch('Paracetamol')">Paracetamol</span>
+        <span class="suggestion" onclick="quickSearch('Dolo')">Dolo 650</span>
+        <span class="suggestion" onclick="quickSearch('Azithromycin')">Azithromycin</span>
+        <span class="suggestion" onclick="quickSearch('Vitamin D')">Vitamin D3</span>
+        <span class="suggestion" onclick="quickSearch('Omeprazole')">Omeprazole</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-strip" id="statsStrip" style="display:none">
+  <div class="stat"><div class="stat-num" id="statPharmacies">0</div><div class="stat-label">Pharmacies</div></div>
+  <div class="stat"><div class="stat-num" id="statAvail">0</div><div class="stat-label">Have Stock</div></div>
+  <div class="stat"><div class="stat-num" id="statLow">0</div><div class="stat-label">Low Stock</div></div>
+</div>
+
+<section class="results-section">
+  <div id="resultsHeader" style="display:none" class="results-header">
+    <div class="results-title" id="resultsTitle">Search Results</div>
+    <div class="result-count">Found <span id="resultCount">0</span> results</div>
+  </div>
+  <div id="resultsContainer">
+    <div class="state-box">
+      <div class="emoji">🏥</div>
+      <h3>Search for a Medicine</h3>
+      <p>Type any medicine name above to find which nearby pharmacies have it in stock.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  let availableOnly = false;
+
+  // Load areas on page load
+  async function loadAreas() {
+    try {
+      const res = await fetch('/api/areas/');
+      const areas = await res.json();
+      const sel = document.getElementById('areaFilter');
+      areas.forEach(area => {
+        const opt = document.createElement('option');
+        opt.value = area;
+        opt.textContent = area;
+        sel.appendChild(opt);
+      });
+    } catch (e) {}
+  }
+
+  function toggleAvailable() {
+    availableOnly = !availableOnly;
+    const toggle = document.getElementById('availToggle');
+    const label = document.getElementById('availLabel');
+    toggle.classList.toggle('on', availableOnly);
+    label.textContent = availableOnly ? 'Available only' : 'Show all stock';
+  }
+
+  function quickSearch(term) {
+    document.getElementById('searchInput').value = term;
+    doSearch();
+  }
+
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  async function doSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    const area = document.getElementById('areaFilter').value;
+
+    if (!q) {
+      showError('Please enter a medicine name to search.');
+      return;
+    }
+
+    showLoading();
+
+    try {
+      const params = new URLSearchParams({ q, available: availableOnly });
+      if (area) params.append('area', area);
+
+      const res = await fetch(`/api/search/?${params}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || 'Something went wrong.');
+        return;
+      }
+
+      renderResults(data);
+    } catch (e) {
+      showError('Network error. Make sure the server is running.');
+    }
+  }
+
+  function showLoading() {
+    document.getElementById('resultsHeader').style.display = 'none';
+    document.getElementById('statsStrip').style.display = 'none';
+    document.getElementById('resultsContainer').innerHTML = `
+      <div class="loader">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>`;
+  }
+
+  function showError(msg) {
+    document.getElementById('resultsHeader').style.display = 'none';
+    document.getElementById('statsStrip').style.display = 'none';
+    document.getElementById('resultsContainer').innerHTML = `
+      <div class="state-box">
+        <div class="emoji">⚠️</div>
+        <h3>Oops!</h3>
+        <p>${msg}</p>
+      </div>`;
+  }
+
+  function renderResults(data) {
+    const q = document.getElementById('searchInput').value.trim();
+    const container = document.getElementById('resultsContainer');
+    const header = document.getElementById('resultsHeader');
+
+    document.getElementById('resultCount').textContent = data.count;
+    document.getElementById('resultsTitle').textContent = `Results for "${q}"`;
+    header.style.display = 'flex';
+
+    if (data.count === 0) {
+      document.getElementById('statsStrip').style.display = 'none';
+      container.innerHTML = `
+        <div class="state-box">
+          <div class="emoji">😔</div>
+          <h3>Not Found Nearby</h3>
+          <p>No pharmacies have <strong>${q}</strong> matching your filters. Try removing the area filter or toggling availability.</p>
+        </div>`;
+      return;
+    }
+
+    // Stats
+    const availCount = data.results.filter(r => r.is_available && r.quantity > 0).length;
+    const lowCount = data.results.filter(r => r.quantity > 0 && r.quantity <= 10).length;
+    document.getElementById('statPharmacies').textContent = data.count;
+    document.getElementById('statAvail').textContent = availCount;
+    document.getElementById('statLow').textContent = lowCount;
+    document.getElementById('statsStrip').style.display = 'flex';
+
+    const cards = data.results.map((r, i) => {
+      const avail = r.is_available && r.quantity > 0;
+      const delay = Math.min(i * 0.05, 0.5);
+      return `
+        <div class="medicine-card" style="animation-delay: ${delay}s">
+          <div class="card-top">
+            <div>
+              <div class="medicine-name">${r.medicine_name}</div>
+              ${r.medicine_generic ? `<div class="medicine-generic">${r.medicine_generic}</div>` : ''}
+            </div>
+            <div class="badges">
+              <div class="badge ${avail ? 'badge-avail' : 'badge-unavail'}">${avail ? '✓ In Stock' : '✗ Out'}</div>
+              <div class="badge badge-cat">${r.medicine_category}</div>
+              ${r.requires_prescription ? '<div class="badge badge-rx">Rx Required</div>' : ''}
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="pharmacy-info">
+            <div class="pharmacy-name">
+              🏪 ${r.pharmacy_name}
+              ${r.pharmacy_is_open_24h ? '<span class="open24">24h</span>' : ''}
+            </div>
+            <div class="pharmacy-detail">📍 ${r.pharmacy_area} — ${r.pharmacy_address}</div>
+            ${r.pharmacy_phone ? `<div class="pharmacy-detail">📞 ${r.pharmacy_phone}</div>` : ''}
+          </div>
+
+          <div class="card-bottom">
+            <div class="price">₹${parseFloat(r.price).toFixed(2)} <span>/ unit</span></div>
+            <div class="qty">Qty: <strong>${r.quantity}</strong> left</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = `<div class="results-grid">${cards}</div>`;
+  }
+
+  loadAreas();
+</script>
+</body>
+</html>
